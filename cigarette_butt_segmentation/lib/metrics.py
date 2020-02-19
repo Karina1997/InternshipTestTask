@@ -1,6 +1,5 @@
 import numpy as np
 
-
 EPS = 1e-10
 
 
@@ -67,3 +66,14 @@ def get_dice(true, pred):
         return dice(true, pred)
     else:
         raise TypeError("Wrong type.")
+
+
+def dice_loss(pred, target, smooth=1.): # added smooth, works with tensors, not nd.ndarrays, also made 1 - dice for learning
+    pred = pred.contiguous()
+    target = target.contiguous()
+
+    intersection = (pred * target).sum(dim=2).sum(dim=2)
+
+    loss = (1 - ((2. * intersection + smooth) / (pred.sum(dim=2).sum(dim=2) + target.sum(dim=2).sum(dim=2) + smooth)))
+
+    return loss.mean()
